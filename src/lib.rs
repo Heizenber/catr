@@ -11,7 +11,9 @@ pub struct Config {
 }
 
 pub fn run(config: Config) -> MyResult<()> {
-    dbg!(config);
+    for filename in config.files {
+        println!("{}", filename);
+    }
     Ok(())
 }
 
@@ -25,11 +27,12 @@ pub fn get_args() -> MyResult<Config> {
                 .value_name("FILE")
                 .help("Input file(s)")
                 .multiple(true)
-                .default_value("-"),
+                .default_value("-")
+                .allow_invalid_utf8(true)
         )
         .arg(
             Arg::with_name("number")
-                .short("n")
+                .short('n')
                 .long("number")
                 .help("Number lines")
                 .takes_value(false)
@@ -37,22 +40,15 @@ pub fn get_args() -> MyResult<Config> {
         )
         .arg(
             Arg::with_name("number_nonblank")
-                .short("b")
+                .short('b')
                 .long("number-nonblank")
                 .help("Number non-blank lines")
                 .takes_value(false),
         )
         .get_matches();
 
-    let files = matches
-        .value_of_lossy("files")
-        .unwrap()
-        .split(" ")
-        .map(|file_name| file_name.to_owned())
-        .collect();
-
     Ok(Config {
-        files: files,
+        files: matches.values_of_lossy("files").unwrap(),
         number_lines: matches.is_present("number"),
         number_nonblank_lines: matches.is_present("number_nonblank"),
     })
