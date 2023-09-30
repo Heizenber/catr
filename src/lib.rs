@@ -21,11 +21,13 @@ pub fn run(config: Config) -> MyResult<()> {
                 for (index, line_read) in buffer.lines().enumerate() {
                     let line = line_read?;
                     if config.number_lines {
-                        println!("{:6}\t{}", index + 1, line);
+                        println!("{:>6}\t{}", index + 1, line);
                     } else if config.number_nonblank_lines {
                         if !line.is_empty() {
                             line_number += 1;
                             println!("{:6}\t{}", line_number, line);
+                        } else {
+                            println!();
                         }
                     } else {
                         println!("{}", line);
